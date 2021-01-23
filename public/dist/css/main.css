@@ -1,0 +1,22 @@
+a:hover {
+  color: #495057;
+  text-decoration: none;
+}
+
+.button-effect {
+  cursor: pointer;
+  -webkit-user-select: none; /* Chrome all / Safari all */
+  -moz-user-select: none; /* Firefox all */
+  -ms-user-select: none; /* IE 10+ */
+  user-select: none;
+}
+
+.short-cut-list {
+  max-height: 70vh;
+  overflow-y: scroll;
+}
+
+.scrollable {
+  max-height: 100px;
+  overflow-y: scroll !important;
+}

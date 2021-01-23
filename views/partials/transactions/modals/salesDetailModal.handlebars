@@ -1,0 +1,50 @@
+<div class="modal fade" id="salesDetailModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"> Satış Detayı
+                </h5>
+            </div>
+            <div class="modal-body">
+                <h5><strong>\{{this.date}} \{{this.hour}}</strong></h5>
+                <div class="table-responsive mt-3">
+                    <table class="table">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Ürün</th>
+                                <th scope="col">Fiyat</th>
+                                <th scope="col">Miktar</th>
+                                <th scope="col">Net</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            \{{#each this.salesList}}
+                            <tr>
+                                <td>\{{this.product.name}}</td>
+                                <td>\{{this.sellPrice}} &#8378</td>
+                                <td>\{{this.unit}} \{{this.product.quantity}}</td>
+                                <td>\{{this.currentPrice}} &#8378</td>
+                            </tr>
+                            \{{/each}}
+                        </tbody>
+                        <tfoot>
+                            <th scope="col">Toplam</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col">\{{this.sumPrice}} &#8378</th>
+                        </tfoot>
+                    </table>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                <button type="submit" class="btn btn-danger" data-dismiss="modal"
+                    onclick="removeSalesModal({'id':'\{{this._id}}','date':'\{{this.hour}} \{{this.date}}'})">Sil</button>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>

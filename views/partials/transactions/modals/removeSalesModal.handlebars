@@ -1,0 +1,16 @@
+<div class="modal fade" id="removeSalesModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ürün Sil</h5>
+            </div>
+            <div class="modal-body">
+                <strong>\{{this.date}}</strong> tarihli satış kaydını silmek istediğinize emin misiniz?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-danger" onclick="removeSales('\{{this.id}}')">Sil</button>
+            </div>
+        </div>
+    </div>
+</div>

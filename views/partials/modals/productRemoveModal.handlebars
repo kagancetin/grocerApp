@@ -1,0 +1,18 @@
+<div class="modal fade" id="productRemoveModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="/removeProduct/\{{_id}}" method="post">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ürün Sil</h5>
+                </div>
+                <div class="modal-body">
+                    <strong>\{{name}}</strong> ürününü silmek istediğinize emin misiniz?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Sil</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

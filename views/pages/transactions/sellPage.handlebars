@@ -1,0 +1,146 @@
+<div class="row">
+    <div class="col-3">
+        <div id="allBarcodeWithoutProductsList" class="list-group short-cut-list">
+        </div>
+        <div class="p-3">
+            <button type="button" class="btn btn-sm btn-block btn-outline-secondary"
+                onclick="allBarcodeWithoutProductsListRef()">
+                Listeyi Yenile
+            </button>
+        </div>
+    </div>
+    <div class="col-9">
+        <div class="input-group input-group-sm mb-3">
+            <input name="barcode" id="barcode" type="text" class="form-control" aria-label="Sizing example input"
+                aria-describedby="inputGroup-sizing-sm" autofocus>
+            <div class="input-group-prepend">
+                <span class="input-group-text">Barkod</span>
+            </div>
+            <div class="input-group-prepend">
+                <button class="input-group-text" onclick="clearBarcode()"><i class="fas fa-undo"></i></button>
+            </div>
+        </div>
+        <div class="table-responsive mt-3">
+            <table class="table">
+                <thead class="thead-light">
+                    <tr>
+                        <th style="max-width:35px !important;"></th>
+                        <th scope="col">Ürün</th>
+                        <th scope="col">Fiyat</th>
+                        <th scope="col">Miktar</th>
+                        <th scope="col">Net</th>
+                    </tr>
+                </thead>
+                <tbody id="salesList" onchange="salesListRef(this)">
+
+                </tbody>
+                <tfoot>
+                    <th style="max-width:35px !important;"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th data-sum-price="" id="sumPrice" scope="col"></th>
+                </tfoot>
+            </table>
+            <div class="mx-1 my-2 ">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="changeSales(5)">5</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="changeSales(10)">10</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="changeSales(20)">20</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="changeSales(50)">50</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="changeSales(100)">100</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="changeSales(200)">200</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="changeSales(-1)">
+                    <i class="fas fa-undo"></i>
+                </button>
+                <span><strong id="moneyBoard">0</strong> &#8378</span>
+                <span class="float-right">Para Üstü: <strong id="changeBoard">0</strong> &#8378</span>
+            </div>
+
+            <div class="m-1">
+                <button onclick="productAddModalClick()" type="button" class="btn btn-primary">Yeni Ürün Ekle</button>
+                <button onclick="clSales()" type="button" class="btn btn-warning float-right ml-2">İptal</button>
+                <button onclick="submitSales()" type="button" class="btn btn-success float-right">Satışı Onayla</button>
+            </div>
+
+        </div>
+
+
+    </div>
+</div>
+</div>
+
+<div id="modals">
+
+</div>
+
+<script id="salesList-template" type="text/x-handlebars-template">
+  <tr>
+    <td data-id="\{{_id}}" style="max-width:35px !important;">
+        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFromList(this)"><i class="fas fa-trash-alt"></i></button>
+        </td>
+    <td>\{{name}}</td>
+    <td>\{{price}} &#8378</td>
+    <td>
+        <div class="input-group input-group-sm mb-3">
+            <div onclick="minusIconClick(this)" class="input-group-prepend button-effect">
+                    <span class="input-group-text">-</span>
+            </div>
+            <input id="unit" data-price="\{{price}}" style="max-width: 80px;" type="number" min="1.00" step="0.01" class="form-control required"
+                aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" value="1" onchange="calculateCurrentPrice(this)">
+            <div onclick="plusIconClick(this)" class="input-group-prepend button-effect">
+                    <span class="input-group-text">+</span>
+            </div>
+            <div class="input-group-append">
+                <span class="input-group-text">\{{quantity}}</span>
+            </div>
+        </div>
+    </td>
+    <td data-current-price="\{{price}}">\{{price}} &#8378</td>      
+</tr>
+</script>
+
+<script id="productAddModal-template" type="text/x-handlebars-template">
+  {{> modals/productAddModal }}
+</script>
+
+<script id="allBarcodeWithoutProductsList-template" type="text/x-handlebars-template">
+    \{{#each this}}
+    <a data-shurtcut="\{{this.shortcut}}" onclick="addSalesList(\{{this.JsonData}})" 
+        class="list-group-item list-group-item-action">
+        \{{this.name}}<span class="float-right">\{{this.shortcut}}</span>
+    </a>
+    \{{/each}}
+</script>
+
+
+
+{{#section 'script'}}
+<script src="/dist/js/actionsProduct.js"></script>
+<script src="/dist/js/sellPage.js"></script>
+
+<script>
+    let changeSales = (money) => {
+
+        let moneyBoard = document.getElementById("moneyBoard");
+        let changeBoard = document.getElementById("changeBoard");
+        let sumPrice = document.getElementById("sumPrice").dataset.sumPrice;
+        if (money >= 0) {
+            console.log(money);
+            moneyBoard.innerText = parseFloat(moneyBoard.innerText) + parseFloat(money);
+            if (!sumPrice) {
+                sumPrice = 0;
+            }
+            changeBoard.innerText = (parseFloat(moneyBoard.innerText) - parseFloat(sumPrice)).toFixed(2);
+            changeBoard.parentElement.style.display = "inline";
+            moneyBoard.parentElement.style.display = "inline";
+        }
+        else {
+            console.log(money);
+            moneyBoard.innerText = "0";
+            changeBoard.innerText = "0";
+        }
+    }
+</script>
+
+
+{{/section}}

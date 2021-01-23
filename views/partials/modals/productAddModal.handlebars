@@ -1,0 +1,65 @@
+<div class="modal fade" id="productAddModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="addProductSubmitForm" action="/addProduct" method="post" onsubmit="submitAddProduct(event)">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Yeni Ürün Ekle</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="input-group input-group-sm mb-3">
+                            <input name="barcode" id="barcode" type="text" class="form-control"
+                                onkeyup="addProductCheck(this)" autofocus>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Barkod</span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group input-group-sm mb-3">
+
+                            <input name="name" id="name" type="text" class="form-control required"
+                                aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Ürün</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group input-group-sm mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">&#8378</span>
+                            </div>
+                            <input name="price" id="price" type="number" min="0.00" step="0.01"
+                                class="form-control required" aria-label="Sizing example input"
+                                aria-describedby="inputGroup-sizing-sm" onchange="priceOnChange(this)">
+
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Fiyat</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group input-group-sm mb-3">
+
+                            <input name="quantity" id="quantity" type="text" class="form-control"
+                                aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"
+                                list="quantityList" onfocus="quantityOnFocus(this)">
+                            <datalist id="quantityList">
+
+                            </datalist>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Miktar</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                    <button id="addProductButtonSubmit" type="submit" class="btn btn-primary">Ekle</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

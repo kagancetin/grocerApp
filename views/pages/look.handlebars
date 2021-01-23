@@ -1,0 +1,82 @@
+<div class="input-group input-group-sm mb-3">
+    <input name="barcode" id="barcode" type="text" class="form-control" aria-label="Sizing example input"
+        aria-describedby="inputGroup-sizing-sm" autofocus>
+    <div class="input-group-prepend">
+        <span class="input-group-text">Barkod</span>
+    </div>
+    <div class="input-group-prepend">
+        <button class="input-group-text" onclick="clearBarcode()"><i class="fas fa-undo"></i></button>
+    </div>
+</div>
+
+<div>
+    <button onclick="productAddModalClick()" type="button" class="btn btn-primary">Yeni Ürün Ekle</button>
+</div>
+
+<div id="search-result" class="pt-3 card-columns">
+</div>
+
+
+
+
+
+<div id="modals">
+
+</div>
+
+<script id="productAddModal-template" type="text/x-handlebars-template">
+  {{> modals/productAddModal }}
+</script>
+<script id="productEditModal-template" type="text/x-handlebars-template">
+  {{> modals/productEditModal }}
+</script>
+<script id="productRemoveModal-template" type="text/x-handlebars-template">
+  {{> modals/productRemoveModal }}
+</script>
+
+{{#section 'script'}}
+<script src="/dist/js/actionsProduct.js"></script>
+<script>
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        document.getElementById("barcode").onkeyup = (event) => {
+            el = event.target;
+            searchProductByBarcodeOnkeyup(el, result => {
+                if (result) {
+                    createProductCard(result);
+                    clearBarcode();
+                }
+                else {
+                }
+            });
+        }
+
+
+    });
+
+    let createProductCard = (searchResult) => {
+        let html = '<div class="card">\
+                    <div class="card-body">\
+                        <button type="button" class="close floay-right" onclick="removeCard(this)">\
+                            <span aria-hidden="true">&times;</span>\
+                        </button>\
+                        <h5 class="card-title">'+ searchResult.name + '</h5>\
+                        <h6 class="card-subtitle mb-2 text-muted">'+ searchResult.quantity + '</h6>\
+                        <p class="card-text">'+ searchResult.price + ' &#8378</p>\
+                    </div>\
+                    <div class="card-footer">\
+                        <button onclick=\'productEditModalClick('+ JSON.stringify(searchResult) + ')\' type="button" class="btn btn-warning">Güncelle</button>\
+                        <button onclick=\'productRemoveModalClick('+ JSON.stringify(searchResult) + ')\' id="removeProduct" type="button" class="btn btn-danger">Sil</button>\
+                    </div>\
+                </div>';
+        document.getElementById("search-result").innerHTML = html + document.getElementById("search-result").innerHTML;
+    }
+
+    let removeCard = el => {
+        el.parentNode.parentNode.remove();
+    }
+
+
+</script>
+{{/section}}

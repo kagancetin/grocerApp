@@ -1,0 +1,27 @@
+<div class="modal fade" id="productShortCutModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="/shortCutProduct/\{{_id}}" method="post">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Kısayol Tuşu İşlemi</h5>
+                </div>
+                <div class="modal-body">
+                    <p><strong>\{{name}}</strong> ürününe işlem yapıyorsunuz.</p>
+                    <div class="input-group input-group-sm mb-3">
+                        <input name="shortcut" id="shortcut" type="text" class="form-control"
+                            aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" maxlength="1"
+                            value="\{{shortcut}}" data-exist-shortcut="\{{shortcut}}"
+                            onkeyup="searchProductByShortcutOnkeyup(this)">
+                        <div class=" input-group-prepend">
+                            <span class="input-group-text">Kısayol Tuşu</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                    <button id="shortcutProductButtonSubmit" type="submit" class="btn btn-primary">Düzenle</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

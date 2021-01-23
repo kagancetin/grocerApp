@@ -1,0 +1,231 @@
+<div class="row">
+    <div class="col-6">
+        <div class="form-group">
+            <div class="input-group input-group-sm mb-3">
+                <input name="barcode" id="barcode" type="text" class="form-control required"
+                    aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" autofocus>
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Barkod</span>
+                </div>
+                <div class="input-group-prepend">
+                    <a class="input-group-text" href="" onclick="searchClear()"><i class="fas fa-undo"></i></a>
+                </div>
+            </div>
+
+        </div>
+        <div class="form-group">
+            <div class="input-group input-group-sm mb-3">
+
+                <input name="name" id="name" type="text" class="form-control required" aria-label="Sizing example input"
+                    aria-describedby="inputGroup-sizing-sm">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Ürün</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">&#8378</span>
+                </div>
+                <input name="price" id="price" type="number" min="0.00" step="0.1" class="form-control required"
+                    aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"
+                    onchange="priceOnChange(this)">
+
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Fiyat</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group input-group-sm mb-3">
+
+                <input name="quantity" id="quantity" type="text" class="form-control" aria-label="Sizing example input"
+                    aria-describedby="inputGroup-sizing-sm" list="quantityList" onfocus="quantityOnFocus(this)">
+                <datalist id="quantityList">
+
+                </datalist>
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Miktar</span>
+                </div>
+            </div>
+        </div>
+        <button id="editProduct" type="button" class="btn btn-warning" disabled>Değiştir</button>
+        <button id="removeProduct" type="button" class="btn btn-danger" disabled>Sil</button>
+        <button id="addProduct" type="button" class="btn btn-primary float-right">Yeni Ürün Ekle</button>
+    </div>
+    <div class="col-6 text-center">
+        <h3 id="selectedName"></h3>
+        <h4 id="selectedPrice"></h4>
+    </div>
+</div>
+
+
+{{#section 'script'}}
+
+<script>
+    let inputs = {
+        name: document.getElementById("name"),
+        barcode: document.getElementById("barcode"),
+        price: document.getElementById("price"),
+        quantity: document.getElementById("quantity")
+    }
+    let addProductButton = document.getElementById("addProduct");
+    let editProductButton = document.getElementById("editProduct");
+    let removeProductButton = document.getElementById("removeProduct");
+
+    addProductButton.onclick = () => {
+        let requiredError = checkRequired();
+        if (requiredError.length > 0) {
+            toastr.warning('Renkli alanlar boş bırakılamaz!', 'Dikkat!');
+        }
+        else {
+            let data = {
+                name: inputs.name.value,
+                barcode: inputs.barcode.value,
+                price: inputs.price.value,
+                quantity: inputs.quantity.value
+            }
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/addProduct", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            xhr.onreadystatechange = function () { // Call a function when the state changes.
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    let responseData = JSON.parse(this.response);
+                    if (responseData) {
+                        toastr.success('Ürün eklenmiştir.', 'Başarılı!');
+                        searchResult(responseData);
+                    }
+                    else {
+                        toastr.error('Bilinmeyen bir hata oluştu.', 'Hata!');
+                    }
+                }
+            }
+            xhr.send(JSON.stringify(data));
+        }
+    }
+
+    editProductButton.onclick = (e) => {
+        let requiredError = checkRequired();
+        console.log(e.target.dataset.id);
+        if (requiredError.length > 0) {
+            toastr.warning('Renkli alanlar boş bırakılamaz!', 'Dikkat!');
+        }
+        else {
+            if (e.target.dataset.id) {
+
+                let link = "/editProduct/" + e.target.dataset.id;
+
+                let data = {
+                    name: inputs.name.value,
+                    barcode: inputs.barcode.value,
+                    price: inputs.price.value,
+                    quantity: inputs.quantity.value
+                }
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", link, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+
+                xhr.onreadystatechange = function () { // Call a function when the state changes.
+                    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                        let responseData = JSON.parse(this.response);
+                        console.log(responseData);
+                        if (responseData) {
+                            toastr.success('Ürün değiştirilmiştir.', 'Başarılı!');
+                            searchResult(responseData);
+                        }
+                        else {
+                            toastr.error('Bilinmeyen bir hata oluştu.', 'Hata!');
+                        }
+                    }
+                }
+                xhr.send(JSON.stringify(data));
+            }
+        }
+    }
+
+    removeProductButton.onclick = (e) => {
+        if (e.target.dataset.id) {
+
+            let link = "/removeProduct/" + e.target.dataset.id;
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", link, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            xhr.onreadystatechange = function () { // Call a function when the state changes.
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    let responseData = JSON.parse(this.response);
+                    if (responseData) {
+                        toastr.success('Ürün silinmiştir.', 'Başarılı!');
+                        searchClear();
+                    }
+                    else {
+                        toastr.error('Bilinmeyen bir hata oluştu.', 'Hata!');
+                    }
+                }
+            }
+            xhr.send();
+        }
+    }
+
+
+    inputs.barcode.onkeyup = (el) => {
+        if (el.target.value != "") {
+            let data = {
+                barcode: el.target.value
+            }
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/searchProductByBarcode", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            xhr.onreadystatechange = function (event) { // Call a function when the state changes.
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    if (this.response == "false") {
+
+                        searchClear();
+                    }
+                    else {
+                        let responseData = JSON.parse(this.response);
+                        if (responseData) {
+
+                            searchResult(responseData);
+                        }
+                    }
+
+                }
+            }
+            xhr.send(JSON.stringify(data));
+        }
+    }
+
+    let searchResult = (data) => {
+        document.getElementById("selectedName").innerHTML = data.name;
+        document.getElementById("selectedPrice").innerHTML = data.price + " &#8378";
+        inputs.barcode.value = data.barcode;
+        inputs.name.value = data.name;
+        inputs.price.value = data.price;
+        inputs.quantity.value = data.quantity ? data.quantity : "";
+        addProductButton.disabled = true;
+        editProductButton.disabled = false;
+        removeProductButton.disabled = false;
+        editProductButton.dataset.id = data._id;
+        removeProductButton.dataset.id = data._id;
+    }
+
+    let searchClear = () => {
+        document.getElementById("selectedName").innerHTML = "";
+        document.getElementById("selectedPrice").innerHTML = "";
+        inputs.barcode.value = inputs.barcode.matches(':focus') ? inputs.barcode.value : "";
+        inputs.name.value = "";
+        inputs.price.value = "";
+        inputs.quantity.value = "";
+        addProductButton.disabled = false;
+        editProductButton.disabled = true;
+        removeProductButton.disabled = true;
+        editProductButton.dataset.id = "";
+        removeProductButton.dataset.id = "";
+    }
+
+</script>
+{{/section}}

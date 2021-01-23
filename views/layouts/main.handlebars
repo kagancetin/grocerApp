@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>MARKET</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+    <!-- Bootstrap core CSS -->
+    <link href="/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/plugins/toastr/toastr.min.css">
+    <link rel="stylesheet" href="/dist/css/main.css">
+    {{{_sections.link}}}
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">Ürün İncele</a>
+            <a class="navbar-brand" href="/allProducts">Ürün Listesi</a>
+            <a class="navbar-brand" href="/transactions/sell">Satış</a>
+            <a class="navbar-brand" href="/transactions/transactionReport">İşlem Raporları</a>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container pt-5">
+        {{{body}}}
+    </div>
+
+    <!-- Bootstrap core JavaScript -->
+    <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
+    <script src="/plugins/jquery/jquery.min.js"></script>
+    <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/plugins/toastr/toastr.min.js"></script>
+    <script src="/plugins/handlebars/dist/handlebars.js"></script>
+    <script>
+        toastr.options = {
+            "positionClass": "toast-bottom-right"
+        }
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script src="/dist/js/product.js"></script>
+    {{{_sections.script}}}
+
+    {{> flashMessage}}
+
+    <script>if (window.module) module = window.module;</script>
+</body>
+
+</html>

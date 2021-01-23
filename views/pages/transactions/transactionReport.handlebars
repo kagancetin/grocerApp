@@ -1,0 +1,477 @@
+<div class="">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#allSalesTab">Tüm Satışlar</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#productTab">Ürün Seç</a>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content pb-4 px-3 border border-top-0">
+        <div id="allSalesTab" class="container tab-pane active"><br>
+            <div class="form-group">
+                <div class="input-group input-group-sm">
+                    <input id="allSalesTimeRange" type="text" class="form-control float-right reservationtime">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Tarih</span>
+                    </div>
+                </div>
+
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" name="allSalesTimeRangeCheck"
+                        id="allSalesTimeRangeCheck" value="option1">
+                    <label class="form-check-label button-effect" for="allSalesTimeRangeCheck">Zaman aralığı olmadan tüm
+                        satışları getir</label>
+                </div>
+            </div>
+            <button onclick="getAllSales()" type="button" class="btn btn-primary">Sonuç</button>
+        </div>
+
+        <div id="productTab" class="container tab-pane fade"><br>
+            <div class="form-group">
+                <div class="input-group input-group-sm">
+                    <input id="productTimeRange" type="text" class="form-control float-right reservationtime">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Tarih</span>
+                    </div>
+                </div>
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" name="productTimeRangeCheck"
+                        id="productTimeRangeCheck" value="option1">
+                    <label class="form-check-label button-effect" for="productTimeRangeCheck">Zaman aralığı olmadan
+                        ürünün tüm satışlarını getir</label>
+                </div>
+            </div>
+            <div class="input-group input-group-sm mb-3">
+                <input name="barcode" id="barcode" type="text" class="form-control" aria-label="Sizing example input"
+                    aria-describedby="inputGroup-sizing-sm" autofocus>
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Barkod</span>
+                </div>
+                <div class="input-group-prepend">
+                    <button class="input-group-text" onclick="clearBarcode()"><i class="fas fa-undo"></i></button>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group input-group-sm mb-3">
+
+                    <input name="name" id="name" type="text" class="form-control scrollable"
+                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"
+                        list="productDropdownList">
+
+                    <datalist id="productDropdownList">
+                        {{#each products}}
+                        <option data-id="{{_id}}" data-barcode="{{barcode}}" value="{{name}}"></option>
+                        {{/each}}
+                    </datalist>
+
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Ürün Bul</span>
+                    </div>
+                    <div class="input-group-prepend">
+                        <button class="input-group-text" onclick="clearName()"><i class="fas fa-undo"></i></button>
+                    </div>
+                </div>
+
+            </div>
+            <button onclick="getProductSalesReport()" type="button" class="btn btn-primary">Sonuç</button>
+        </div>
+    </div>
+</div>
+
+<div id="reportField" class="my-4 mx-2"></div>
+
+<div id="modals"></div>
+
+<script id="allSalesTable-template" type="text/x-handlebars-template">
+  {{> transactions/allSalesTable }}
+</script>
+
+<script id="salesDetailModal-template" type="text/x-handlebars-template">
+  {{> transactions/modals/salesDetailModal }}
+</script>
+
+<script id="combinedSalesDetailModal-template" type="text/x-handlebars-template">
+  {{> transactions/modals/combinedSalesDetailModal }}
+</script>
+
+<script id="removeSalesModal-template" type="text/x-handlebars-template">
+  {{> transactions/modals/removeSalesModal }}
+</script>
+
+<script id="getProductSalesReportModal-template" type="text/x-handlebars-template">
+  {{> transactions/getProductSalesReportModal }}
+</script>
+
+{{#section 'link'}}
+<link rel="stylesheet" href="/plugins/daterangepicker/daterangepicker.css">
+{{/section}}
+
+{{#section 'script'}}
+<script src="/plugins/moment/moment.min.js"></script>
+<script src="/plugins/daterangepicker/daterangepicker.js"></script>
+<script src="/dist/js/reports.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        let datalist = document.querySelectorAll('datalist');
+        console.log(datalist);
+        for (i = 0; i < datalist.length; i++) {
+            datalist[i].style.maxHeight = "100px";
+            datalist[i].style.overflowY = "scroll";
+
+        }
+        console.log(datalist);
+    });
+</script>
+
+
+<script>
+    let getAllSales = () => {
+        let allSalesTimeRange = document.getElementById("allSalesTimeRange");
+        let allSalesTimeRangeCheck = document.getElementById("allSalesTimeRangeCheck");
+        let data = {}
+        if (allSalesTimeRangeCheck.checked) {
+            data = {
+                allSalesTimeRange: false
+            }
+        }
+        else {
+            data = {
+                allSalesTimeRange: allSalesTimeRange.value
+            }
+        }
+
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/transactions/getAllSales", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.onreadystatechange = async function () { // Call a function when the state changes.
+            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                let response = JSON.parse(this.response);
+                let responseData = response.allSales;
+                let combinedSales = {};
+                let data = [];
+                if (responseData.length > 0) {
+                    data = responseData.map(part => {
+                        if (Object.keys(combinedSales).length === 0) {
+                            let convertedDateStart = dateConvert(response.startTime);
+                            let convertedDateEnd = dateConvert(response.endTime);
+                            let obj = JSON.parse(JSON.stringify(part));
+                            combinedSales = {
+                                startDate: convertedDateStart[1],
+                                startHour: convertedDateStart[0],
+                                endDate: convertedDateEnd[1],
+                                endHour: convertedDateEnd[0],
+                                sumPrice: obj.sumPrice,
+                                salesList: obj.salesList
+                            };
+                        }
+                        else {
+                            combinedSales.sumPrice = (parseFloat(combinedSales.sumPrice) + parseFloat(part.sumPrice)).toFixed(2);
+                            let obj = JSON.parse(JSON.stringify(part));
+                            for (let i = 0; i < obj.salesList.length; i++) {
+
+                                if (combinedSales.salesList.some(el => el.product._id === obj.salesList[i].product._id && el.sellPrice === obj.salesList[i].sellPrice)) {
+                                    let index = combinedSales.salesList.findIndex(it => it.product._id === obj.salesList[i].product._id && it.sellPrice === obj.salesList[i].sellPrice);
+                                    combinedSales.salesList[index].unit += obj.salesList[i].unit;
+                                    combinedSales.salesList[index].currentPrice = (parseFloat(combinedSales.salesList[index].currentPrice) + parseFloat(obj.salesList[i].currentPrice)).toFixed(2);
+                                }
+                                else {
+                                    combinedSales.salesList.push(obj.salesList[i]);
+                                }
+                            }
+                        }
+
+
+                        let convertedDate = dateConvert(part.date);
+                        part.date = convertedDate[1];
+                        part.hour = convertedDate[0];
+
+                        return part
+                    });
+
+                }
+
+                combinedSales.salesList.sort((a, b) => {
+                    return (a.product.name > b.product.name) ? 1 : -1;
+                });
+                combinedSales.jsonData = JSON.stringify(combinedSales);
+                var source = document.getElementById("allSalesTable-template").innerHTML;
+                var template = await Handlebars.compile(source);
+                var html = await template({ data: data, combinedSales: combinedSales });
+
+                document.getElementById("reportField").innerHTML = html;
+
+
+            }
+            else {
+                document.getElementById("reportField").innerHTML = "Satış bulunmadı.";
+            }
+        }
+
+
+
+        xhr.send(JSON.stringify(data));
+    }
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        document.getElementById("barcode").onkeyup = (event) => {
+            el = event.target;
+            searchProductByBarcodeOnkeyup(el, result => {
+                if (result) {
+                    let productDropdownList = document.getElementById("productDropdownList").children;
+                    for (let i = 0; i < productDropdownList.length; i++) {
+                        if (productDropdownList[i].dataset.barcode == result.barcode) {
+                            document.getElementById("name").value = productDropdownList[i].value;
+                            break;
+                        }
+                    }
+                    clearBarcode();
+                }
+                else {
+                }
+            });
+        }
+    });
+
+    let getProductSalesReport = () => {
+        let productTimeRange = document.getElementById("productTimeRange");
+        let productTimeRangeCheck = document.getElementById("productTimeRangeCheck");
+
+        let productDropdownList = document.getElementById("productDropdownList").children;
+        let selectedName = document.getElementById("name").value;
+        let selectedId;
+        for (let i = 0; i < productDropdownList.length; i++) {
+            if (productDropdownList[i].value == selectedName) {
+                selectedId = productDropdownList[i].dataset.id;
+                break;
+            }
+        }
+
+        let data = {}
+        if (productTimeRangeCheck.checked) {
+            data = {
+                productTimeRange: false,
+                productId: selectedId
+            }
+        }
+        else {
+            data = {
+                productTimeRange: productTimeRange.value,
+                productId: selectedId
+            }
+        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/transactions/getProductSalesReport", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.onreadystatechange = async function () { // Call a function when the state changes.
+            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                let response = JSON.parse(this.response);
+                let responseData = response.allSales;
+                console.log(responseData.length);
+                let combinedSales = {};
+                let data = [];
+                if (responseData.length > 0) {
+                    data = responseData.map(part => {
+                        part.sumPrice = part.salesList.map(part => (parseFloat(part.sellPrice) * part.unit).toFixed(2));
+                        if (Object.keys(combinedSales).length === 0) {
+                            let convertedDateStart = dateConvert(response.startTime);
+                            let convertedDateEnd = dateConvert(response.endTime);
+                            let obj = JSON.parse(JSON.stringify(part));
+                            combinedSales = {
+                                startDate: convertedDateStart[1],
+                                startHour: convertedDateStart[0],
+                                endDate: convertedDateEnd[1],
+                                endHour: convertedDateEnd[0],
+                                sumPrice: obj.sumPrice,
+                                salesList: obj.salesList
+                            };
+                        }
+                        else {
+                            combinedSales.sumPrice = (parseFloat(combinedSales.sumPrice) + parseFloat(part.sumPrice)).toFixed(2);
+                            let obj = JSON.parse(JSON.stringify(part));
+                            for (let i = 0; i < obj.salesList.length; i++) {
+
+                                if (combinedSales.salesList.some(el => el.product._id === obj.salesList[i].product._id && el.sellPrice === obj.salesList[i].sellPrice)) {
+                                    let index = combinedSales.salesList.findIndex(it => it.product._id === obj.salesList[i].product._id && it.sellPrice === obj.salesList[i].sellPrice);
+                                    combinedSales.salesList[index].unit += obj.salesList[i].unit;
+                                    combinedSales.salesList[index].currentPrice = (parseFloat(combinedSales.salesList[index].currentPrice) + parseFloat(obj.salesList[i].currentPrice)).toFixed(2);
+                                }
+                                else {
+                                    combinedSales.salesList.push(obj.salesList[i]);
+                                }
+                            }
+                        }
+
+
+                        let convertedDate = dateConvert(part.date);
+                        part.date = convertedDate[1];
+                        part.hour = convertedDate[0];
+
+                        return part
+                    });
+
+
+
+                    combinedSales.jsonData = JSON.stringify(combinedSales);
+                    var source = document.getElementById("getProductSalesReportModal-template").innerHTML;
+                    var template = await Handlebars.compile(source);
+                    var html = await template({ data: data, combinedSales: combinedSales });
+
+                    document.getElementById("reportField").innerHTML = html;
+                }
+                else {
+                    document.getElementById("reportField").innerHTML = "Satış bulunmadı.";
+                }
+            }
+        }
+
+        xhr.send(JSON.stringify(data));
+    }
+
+    let getCombinedSalesDetailModal = async data => {
+        var source = document.getElementById("combinedSalesDetailModal-template").innerHTML;
+        var template = await Handlebars.compile(source);
+        var html = await template(JSON.parse(data));
+
+        document.getElementById("modals").innerHTML = html;
+
+        $("#combinedSalesDetailModal").modal("show");
+    }
+    let getSalesBySalesIdModal = (id) => {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/transactions/getSalesBySalesId", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.onreadystatechange = async function () { // Call a function when the state changes.
+            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                let response = JSON.parse(this.response);
+
+                let convertedDate = dateConvert(response.date);
+                let data = response;
+                data.date = convertedDate[1];
+                data.hour = convertedDate[0];
+
+                var source = document.getElementById("salesDetailModal-template").innerHTML;
+                var template = await Handlebars.compile(source);
+                var html = await template(data);
+
+                document.getElementById("modals").innerHTML = html;
+
+                $("#salesDetailModal").modal("show");
+            }
+        }
+        xhr.send(JSON.stringify({ id: id }));
+    }
+
+    let removeSalesModal = async (data) => {
+        var source = document.getElementById("removeSalesModal-template").innerHTML;
+        var template = await Handlebars.compile(source);
+        var html = await template(data);
+
+        document.getElementById("modals").innerHTML = html;
+
+        $("#removeSalesModal").modal("show");
+    }
+
+    let removeSales = (id) => {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/transactions/removeSales", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.onreadystatechange = async function () { // Call a function when the state changes.
+            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                let response = JSON.parse(this.response);
+                if (this.response) {
+                    let responseData = JSON.parse(this.response);
+
+                    toastr.success('Satış kaydı başarıyla silinmiştir.', 'Başarılı');
+                    getAllSales();
+                }
+                else {
+                    toastr.error('Bir hata oluştu. Lütfen tekrar deneyiniz!', 'Hata');
+                }
+                $("#removeSalesModal").modal("hide");
+                document.getElementById("modals").innerHTML = "";
+            }
+        }
+        xhr.send(JSON.stringify({ id: id }));
+    }
+
+    let clearName = () => {
+        let selectedName = document.getElementById("name");
+        selectedName.value = "";
+        selectedName.focus();
+    }
+
+    let dateConvert = (d) => {
+        if (d) {
+            let monthNames = new Array("Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık");
+            let dayNames = new Array("Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi");
+            let date = new Date(d);
+            let hour = date.getHours();
+            hour = (hour < 10 ? "0" : "") + hour;
+            let min = date.getMinutes();
+            min = (min < 10 ? "0" : "") + min;
+            let year = date.getFullYear();
+            let month = monthNames[date.getMonth()];
+            let day = date.getDate();
+            day = (day < 10 ? "0" : "") + day;
+            let dayName = dayNames[date.getDay()];
+            // return [time(hh:mm), date(DD Monthname YYYY Dayname )] array format
+            return [hour + ":" + min, day + " " + month + " " + year + " " + dayName];
+        }
+        else {
+            return [false, false];
+        }
+
+    }
+
+    $('.reservationtime').daterangepicker({
+        timePicker24Hour: true,
+        timePicker: true,
+        timePickerIncrement: 5,
+        locale: {
+            format: 'DD/MM/YYYY H:mm',
+            "separator": " - ",
+            "applyLabel": "Uygula",
+            "cancelLabel": "Vazgeç",
+            "fromLabel": "Dan",
+            "toLabel": "a",
+            "customRangeLabel": "Seç",
+            "daysOfWeek": [
+                "Pt",
+                "Sl",
+                "Çr",
+                "Pr",
+                "Cm",
+                "Ct",
+                "Pz"
+            ],
+            "monthNames": [
+                "Ocak",
+                "Şubat",
+                "Mart",
+                "Nisan",
+                "Mayıs",
+                "Haziran",
+                "Temmuz",
+                "Ağustos",
+                "Eylül",
+                "Ekim",
+                "Kasım",
+                "Aralık"
+            ],
+            "firstDay": 1
+        }
+    })
+</script>
+{{/section}}

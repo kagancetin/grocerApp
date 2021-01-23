@@ -1,0 +1,104 @@
+{{#if products}}
+<table id="productList" class="table table-bordered">
+    <thead>
+
+        <tr>
+            <th style="border-bottom:none;border-top:none">İsim</th>
+            <th style="border-bottom:none;border-top:none">Barkod</th>
+            <th style="border-bottom:none;border-top:none">Fiyat</th>
+            <th style="border-bottom:none;border-top:none">Miktar Tipi</th>
+            <th style="border-bottom:none;border-top:none">İşlemler</th>
+        </tr>
+
+    </thead>
+    <tbody>
+        {{#each products}}
+        <tr>
+            <td>{{this.name}}</td>
+            <td>
+                {{#ifCond this.barcode '==' "" }}
+                {{#ifCond ../this.shortcut '!=' "" }}
+                {{../this.shortcut}} (Kısayol Tuşu)
+                {{/ifCond}}
+                {{else}}
+                {{../this.barcode}}
+                {{/ifCond}}
+            </td>
+            <td>{{this.price}} &#8378</td>
+            <td class="text-center">{{this.quantity}}</td>
+            <td class="text-center">
+                <button type="button" class="btn btn-danger btn-sm" onclick="productRemoveModalClick({{json this}})">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <button type="button" class="btn btn-warning btn-sm" onclick="productEditModalClick({{json this}})">
+                    <i class="fas fa-edit"></i>
+                </button>
+                {{#ifCond this.barcode '==' "" }}
+                <button type="button" class="btn btn-warning btn-sm"
+                    onclick="productShortCutModalClick({{json ../this}})" data-toggle="tooltip" data-placement="bottom"
+                    title="Kısayol Tuşu Ekle ya da Değiştir">
+                    <i class="fab fa-adn"></i>
+                </button>
+                {{/ifCond}}
+
+
+
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+{{/if}}
+
+
+<div id="modals">
+
+</div>
+
+<script id="productEditModal-template" type="text/x-handlebars-template">
+  {{> modals/productEditModal }}
+</script>
+<script id="productRemoveModal-template" type="text/x-handlebars-template">
+  {{> modals/productRemoveModal }}
+</script>
+<script id="productShortCutModal-template" type="text/x-handlebars-template">
+  {{> modals/productShortCutModal }}
+</script>
+
+{{#section 'link'}}
+<link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+{{/section}}
+
+{{#section 'script'}}
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="/dist/js/actionsProduct.js"></script>
+<script>
+    $('#productList').DataTable(
+        {
+            "language": {
+                "sProcessing": "İşleniyor...",
+                "sLengthMenu": "Sayfada _MENU_ Kayıt Göster",
+                "sZeroRecords": "Eşleşen Kayıt Bulunmadı",
+                "sInfo": "  _TOTAL_ Kayıttan _START_ - _END_ Arası Kayıtlar",
+                "sInfoEmpty": "Kayıt Yok",
+                "sInfoFiltered": "( _MAX_ Kayıt İçerisinden Bulunan)",
+                "sInfoPostFix": "",
+                "sSearch": "Bul:",
+                "sUrl": "",
+                "oPaginate": {
+                    "sFirst": "İlk",
+                    "sPrevious": "Önceki",
+                    "sNext": "Sonraki",
+                    "sLast": "Son"
+                }
+            }
+        }
+    );
+
+
+</script>
+{{/section}}
