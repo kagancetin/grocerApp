@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const helpers = require("handlebars-helpers")();
 const flash = require("connect-flash");
 const session = require("express-session");
+const path = require("path");
 
 const handlebarsHelpers = require("./helpers/handlebarsHelpers");
 
@@ -50,7 +51,7 @@ app.use(bodyParser.json());
 // Connect Flash
 app.use(flash());
 
-app.use(express.static("./public"));
+app.use(express.static(path.join(__dirname, "public")));
 
 // Template Engine
 const hbs = exphbs.create({
@@ -60,7 +61,7 @@ const hbs = exphbs.create({
 });
 app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
-app.set("views", "./views");
+app.set("views", path.join(__dirname, "views"));
 
 app.use((req, res, next) => {
   res.locals.flashMessages = {
