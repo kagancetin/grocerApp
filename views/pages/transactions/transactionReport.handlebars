@@ -223,7 +223,7 @@
 
         document.getElementById("barcode").onkeyup = (event) => {
             el = event.target;
-            searchProductByBarcodeOnkeyup(el, result => {
+            searchProductByBarcodeOnkeyup(el, event.code, result => {
                 if (result) {
                     let productDropdownList = document.getElementById("productDropdownList").children;
                     for (let i = 0; i < productDropdownList.length; i++) {

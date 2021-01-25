@@ -51,28 +51,30 @@ let checkRequired = (el = false) => {
   return requiredError;
 };
 
-let searchProductByBarcodeOnkeyup = (e, callback) => {
-  if (e.value != "") {
-    let data = {
-      barcode: e.value,
-    };
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "/searchProductByBarcode", true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onreadystatechange = function (event) {
-      // Call a function when the state changes.
-      if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-        if (this.response == "false") {
-          callback(false);
-        } else {
-          let responseData = JSON.parse(this.response);
-          if (responseData) {
-            callback(responseData);
+let searchProductByBarcodeOnkeyup = (e, key, callback) => {
+  if (key != "Enter") {
+    if (e.value != "") {
+      let data = {
+        barcode: e.value,
+      };
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "/searchProductByBarcode", true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onreadystatechange = function (event) {
+        // Call a function when the state changes.
+        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+          if (this.response == "false") {
+            callback(false);
+          } else {
+            let responseData = JSON.parse(this.response);
+            if (responseData) {
+              callback(responseData);
+            }
           }
         }
-      }
-    };
-    xhr.send(JSON.stringify(data));
+      };
+      xhr.send(JSON.stringify(data));
+    }
   }
 };
 
@@ -121,3 +123,12 @@ let clearBarcode = () => {
   document.getElementById("barcode").value = "";
   document.getElementById("barcode").focus();
 };
+
+$(document).ready(function () {
+  $(window).keydown(function (event) {
+    if (event.keyCode == 13) {
+      event.preventDefault();
+      return false;
+    }
+  });
+});

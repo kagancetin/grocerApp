@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("barcode").onkeyup = (event) => {
     el = event.target;
-    searchProductByBarcodeOnkeyup(el, (result) => {
+    searchProductByBarcodeOnkeyup(el, event.code, (result) => {
       if (result) {
         addSalesList(result);
         clearBarcode();
