@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "electron-builder --publish=never",
     "start": "electron ."
   },
   "repository": {
@@ -14,7 +14,8 @@
   "author": "Ismet Kagan Cetin",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^11.1.1"
+    "electron": "^11.1.1",
+    "electron-builder": "^22.9.1"
   },
   "dependencies": {
     "connect-flash": "^0.1.1",
@@ -23,5 +24,19 @@
     "express-session": "^1.17.1",
     "handlebars-helpers": "^0.10.0",
     "mongoose": "^5.11.10"
+  },
+  "build": {
+    "appId": "com.ismet.grocerapp",
+    "productName": "MARKET",
+    "win": {
+      "asar": false,
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/icon.png"
+    },
+    "directories": {
+      "output": "../release"
+    }
   }
 }

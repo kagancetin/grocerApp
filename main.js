@@ -1,5 +1,9 @@
 const { app, BrowserWindow } = require("electron");
 const server = require("./app");
+const nativeImage = require("electron").nativeImage;
+
+var image = nativeImage.createFromPath(__dirname + "/icon.png");
+image.setTemplateImage(true);
 
 let mainWindow;
 
@@ -7,7 +11,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1281,
     height: 800,
-    icon: "grocer.png",
+    icon: image,
     title: "MARKET",
     webPreferences: {
       nodeIntegration: true,
