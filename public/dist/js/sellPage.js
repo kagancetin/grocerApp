@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   };
-
+  /*
   document.body.addEventListener("keypress", (e) => {
     if (e.target.nodeName != "INPUT") {
       var a = document.querySelector('a[data-shurtcut="' + e.key + '"]');
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
         a.click();
       }
     }
-  });
+  });*/
   allBarcodeWithoutProductsListRef();
 });
 
@@ -25,7 +25,8 @@ let addSalesList = async (product) => {
   var source = document.getElementById("salesList-template").innerHTML;
   var template = await Handlebars.compile(source);
   var html = await template(product);
-  document.getElementById("salesList").innerHTML += html;
+  document.getElementById("salesList").innerHTML =
+    html + document.getElementById("salesList").innerHTML;
   salesListRef(document.getElementById("salesList"));
 };
 
@@ -61,7 +62,7 @@ let calculateCurrentPrice = (e) => {
   let currentPrice = parseFloat(
     inputNumber * e.getAttribute("data-price")
   ).toFixed(2);
-  related_td.innerHTML = currentPrice + " &#8378";
+  related_td.innerHTML = currentPrice + " TL";
   related_td.setAttribute("data-current-price", currentPrice);
   salesListRef(document.getElementById("salesList"));
 };
@@ -90,7 +91,7 @@ let salesListRef = (e) => {
     sumPriceValue += parseFloat(price);
   }
   sumPrice.innerHTML =
-    sumPriceValue == 0 ? "" : sumPriceValue.toFixed(2) + " &#8378";
+    sumPriceValue == 0 ? "" : sumPriceValue.toFixed(2) + " TL";
   sumPrice.setAttribute("data-sum-price", sumPriceValue.toFixed(2));
   changeSales(0);
 };

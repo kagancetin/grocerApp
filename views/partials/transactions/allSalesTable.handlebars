@@ -28,7 +28,7 @@
                 <small>\{{this.product.name}} - \{{this.unit}} \{{this.product.quantity}}</small><br>
                 \{{/each}}
             </td>
-            <td>\{{this.combinedSales.sumPrice}} &#8378</td>
+            <td>\{{this.combinedSales.sumPrice}} TL</td>
             <td class="text-center">
                 <button type="button" class="btn btn-primary btn-sm"
                     onclick="getCombinedSalesDetailModal('\{{this.combinedSales.jsonData}}')">
@@ -61,7 +61,7 @@
                 <small>\{{this.product.name}} - \{{this.unit}} \{{this.product.quantity}}</small><br>
                 \{{/each}}
             </td>
-            <td>\{{this.sumPrice}} &#8378</td>
+            <td>\{{this.sumPrice}} TL</td>
             <td class="text-center">
                 <button type="button" class="btn btn-danger btn-sm"
                     onclick="removeSalesModal({'id':'\{{this._id}}','date':'\{{this.hour}} \{{this.date}}'})">

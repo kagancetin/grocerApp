@@ -126,9 +126,19 @@ let clearBarcode = () => {
 
 $(document).ready(function () {
   $(window).keydown(function (event) {
+    console.log(event);
+
     if (event.keyCode == 13) {
       event.preventDefault();
       return false;
+    }
+    if (event.target.baseURI == "http://localhost:3000/transactions/sell") {
+      if (event.target.nodeName != "INPUT") {
+        var a = document.querySelector('a[data-shurtcut="' + event.key + '"]');
+        if (a) {
+          a.click();
+        }
+      }
     }
   });
 });
